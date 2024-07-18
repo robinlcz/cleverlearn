@@ -1,6 +1,6 @@
 import os
 import re
-file_path= "./LimitesSuites/limitesSuites.tex"
+import sys
 
 def latex_to_html(latex_str):
     # Dictionnaire des commandes LaTeX et leurs équivalents HTML
@@ -35,7 +35,7 @@ def latex_to_html(latex_str):
         r'\\end{prop}' : r'',
         r'\\end{deff}' : r'',
         r'{Entrainement et exercices}' : r'<h2>Entrainement et exercices</h2>',
-        r'{Correction des exercices}' : r'<h2>Correction des exercices</h2>',
+        r'{Correction des exercices}' : r'',
         r'{Contenu de cours}' : r'<h2>Contenu de cours</h2>',
     }
 
@@ -100,92 +100,75 @@ def convert_images_to_html(latex_str):
     
     return latex_str
 
-def main():
-    with open(file_path, 'r') as file:
+def main(arg):
+    with open(arg, 'r') as file:
         src = file.read()
         
         section = src.split('\section')
         
-        
+    section[2] = section[2].split(r'\end{exo}')
+    section[3] = section[3].split(r'\end{corr}')
 
+    print(section[2][0])
     file.close()
      
-    for i in range(1,4): 
-        # Créer une page HTML
-        if i == 1:
-            html_page = f"""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Chapitre 1 </title>
-                <script src="mathjax-config.js" defer></script>
-                <script id="MathJax-script" async
-                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-                </script>
-            </head>
-            <body>
-            <a href="exo.html">Liste d'exercice</a>
-            <p>
-                {latex_to_html(section[1])}
-            </p>
-            </body>
-            </html>
-            """
+    # Créer une page HTML
+    html_page = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chapitre 1 </title>
+        <script src="mathjax-config.js" defer></script>
+        <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        </script>
+    </head>
+    <body>
+    <a href="exo.html">Liste d'exercice</a>
+    <p>
+        {latex_to_html(section[1])}
+    </p>
+    </body>
+    </html>
+    """
         
-            html_file_path = 'index.html'
-        if i == 2: 
-            html_page = f"""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Exercice Chapitre 1 </title>
-                <script src="mathjax-config.js" defer></script>
-                <script id="MathJax-script" async
-                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-                </script>
-            </head>
-            <body>
-            <a href="index.html">Cours</a>
-            <a href="corr.html">Corrigé d'exercice</a>
-            <p>
-                {latex_to_html(section[2])}
-            </p>
-            </body>
-            </html>
-            """
-        
-            html_file_path = 'exo.html'
-        if i == 3:
-            html_page = f"""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Corrigé Chapitre 1 </title>
-                <script src="mathjax-config.js" defer></script>
-                <script id="MathJax-script" async
-                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-                </script>
-            </head>
-            <body>
-            <a href="index.html">Cours</a>
-            <a href="exo.html">Exercice</a>
-            <p>
-                {latex_to_html(section[3])}
-            </p>
-            </body>
-            </html>
-            """
-        
-            html_file_path = 'corr.html'
+    html_file_path = 'index.html'
             
-        with open(html_file_path, 'w', encoding='utf-8') as html_file:
-            html_file.write(html_page)
+    html_page2 = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exercice Chapitre 1 </title>
+        <script src="mathjax-config.js" defer></script>
+        <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        </script>
+    </head>
+    <body>
+    <a href="index.html">Cours</a>
+    <a href="corr.html">Corrigé d'exercice</a>
+    <p>
+    """
+    for i in range(len(section[2])):
+        html_page2 += f"{latex_to_html(section[2][i])} {latex_to_html(section[3][i])}"
+    html_page2 += f"""</p>
+                    </body>
+                    </html>"""
+
+    html_file_path2 = 'exo.html'
+        
+    with open(html_file_path, 'w', encoding='utf-8') as html_file:
+        html_file.write(html_page)
+            
+        html_file.close()
+    with open(html_file_path2, 'w', encoding='utf-8') as html_file:
+        html_file.write(html_page2)
+        
+        html_file.close()
 
 args = sys.argv[1:]
 main(args[0])
