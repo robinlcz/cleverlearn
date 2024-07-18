@@ -150,7 +150,6 @@ def main(arg):
     </head>
     <body>
     <a href="index.html">Cours</a>
-    <a href="corr.html">Corrigé d'exercice</a>
     <p>
     """
     for i in range(len(section[2])):
