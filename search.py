@@ -29,8 +29,9 @@ repertoire = '.'  # Répertoire courant
 fichiers_tex = trouver_fichiers_tex(repertoire)
 print(f"Fichiers .tex trouvés dans {repertoire} :")
 for fichier in fichiers_tex:
+    print(fichier.split("/")[1])
     try:
-        result = subprocess.run("python3 render.py "+fichier, shell=True, check=True, text=True, capture_output=True)
+        result = subprocess.run("python3 render.py "+fichier + " ./"+fichier.split("/")[1]+"/", shell=True, check=True, text=True, capture_output=True)
         print(result.returncode, result.stdout, result.stderr)
     except subprocess.CalledProcessError as e:
         print(e.returncode, e.stdout, e.stderr)
